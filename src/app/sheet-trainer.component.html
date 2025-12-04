@@ -1,0 +1,124 @@
+<mat-card class="trainer-card">
+  <mat-card-header>
+    <mat-card-title>Sheet music trainer</mat-card-title>
+    <mat-card-subtitle>Identify the note shown on the staff</mat-card-subtitle>
+  </mat-card-header>
+
+  <mat-card-content>
+    <div class="score-row">
+      <mat-progress-bar
+        mode="determinate"
+        [value]="scorePercent()"
+      ></mat-progress-bar>
+      <div class="score-summary">
+        {{ correctCount() }} / {{ totalAttempts() }} correct
+        ({{ scorePercentLabel() }})
+      </div>
+    </div>
+
+    <div class="settings-row">
+      <mat-form-field appearance="outline" class="key-select">
+        <mat-label>Key</mat-label>
+        <mat-select
+          [value]="currentKey()"
+          (valueChange)="onKeyChange($event)"
+        >
+          @for (key of keyOptions; track key) {
+            <mat-option [value]="key">{{ key }} major</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+
+      <mat-slide-toggle
+        [checked]="includeAccidentals()"
+        (change)="onAccidentalsToggle($event.checked)"
+      >
+        Sharps / flats
+      </mat-slide-toggle>
+
+      <mat-slide-toggle
+        [checked]="useBassClef()"
+        (change)="onBassClefToggle($event.checked)"
+      >
+        Bass clef
+      </mat-slide-toggle>
+    </div>
+
+    <div class="staff-wrapper">
+      <div class="staff">
+        <div class="clef" aria-hidden="true">
+          {{ clefGlyph() }}
+        </div>
+        @if (keySignatureGlyphs()) {
+          <div class="key-signature" aria-hidden="true">
+            {{ keySignatureGlyphs() }}
+          </div>
+        }
+        @for (line of staffLines; track line) {
+          <div class="staff-line"></div>
+        }
+        <div
+          class="note-head"
+          [style.transform]="staffNoteTransform()"
+          [attr.aria-label]="displayNoteLabel()"
+          role="img"
+        ></div>
+      </div>
+    </div>
+
+    <div class="piano">
+      <div class="piano-whites">
+        @for (key of pianoWhiteKeys; track key.id) {
+          <button
+            type="button"
+            class="piano-key white-key"
+            [ngClass]="{
+              'key-correct':
+                selectedAnswer() === key.note && isCorrect(),
+              'key-incorrect':
+                selectedAnswer() === key.note && !isCorrect()
+            }"
+            (click)="selectKey(key)"
+          >
+            <span class="key-label">{{ key.label }}</span>
+          </button>
+        }
+      </div>
+      <div class="piano-blacks">
+        @for (key of pianoBlackKeys; track key.id) {
+          <button
+            type="button"
+            class="piano-key black-key"
+            [ngClass]="{
+              'key-correct':
+                selectedAnswer() === key.note && isCorrect(),
+              'key-incorrect':
+                selectedAnswer() === key.note && !isCorrect()
+            }"
+            (click)="selectKey(key)"
+          >
+            <span class="key-label">{{ key.label }}</span>
+          </button>
+        }
+      </div>
+    </div>
+
+    @if (selectedAnswer() !== null) {
+      <div class="feedback">
+        @if (isCorrect()) {
+          <span>Correct – this is {{ displayNoteLabel() }}.</span>
+        } @else {
+          <span>Incorrect – this is {{ displayNoteLabel() }}.</span>
+        }
+      </div>
+    }
+  </mat-card-content>
+
+  <mat-card-actions align="end">
+    <button mat-stroked-button color="primary" (click)="nextRandomNote()">
+      Next note
+    </button>
+  </mat-card-actions>
+</mat-card>
+
+

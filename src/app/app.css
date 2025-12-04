@@ -1,0 +1,11 @@
+.app-main {
+  padding: 1.5rem;
+}
+
+button:hover,
+.mat-mdc-button:hover,
+.mat-mdc-raised-button:hover,
+.mat-mdc-outlined-button:hover,
+.mat-mdc-stroked-button:hover {
+  cursor: pointer;
+}
